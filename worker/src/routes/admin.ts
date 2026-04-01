@@ -478,4 +478,33 @@ admin.delete('/rate-limits', async (c) => {
   return c.json({ message: `Cleared ${cleared} rate limit entries` });
 });
 
+// ── GET /admin/fp-reports — list false positive reports ──────────────────
+admin.get('/fp-reports', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT r.id, r.scan_id, r.finding_type, r.finding_url, r.finding_severity, r.reason,
+            r.status, r.created_at, u.email as user_email
+     FROM false_positive_reports r
+     LEFT JOIN users u ON r.user_id = u.id
+     ORDER BY r.created_at DESC
+     LIMIT 200`
+  ).all<{
+    id: string; scan_id: string; finding_type: string; finding_url: string;
+    finding_severity: string; reason: string | null; status: string;
+    created_at: number; user_email: string;
+  }>();
+  return c.json({ reports: results });
+});
+
+// ── PATCH /admin/fp-reports/:id — update status (pending/confirmed/rejected) ─
+admin.patch('/fp-reports/:id', async (c) => {
+  const id = c.req.param('id');
+  const { status } = await c.req.json().catch(() => ({})) as { status?: string };
+  if (!status || !['pending', 'confirmed', 'rejected'].includes(status)) {
+    return c.json({ error: 'status must be pending, confirmed or rejected' }, 400);
+  }
+  await c.env.DB.prepare('UPDATE false_positive_reports SET status = ? WHERE id = ?')
+    .bind(status, id).run();
+  return c.json({ success: true });
+});
+
 export default admin;

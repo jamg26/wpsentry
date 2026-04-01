@@ -405,4 +405,34 @@ function isPrivateTarget(url: string): boolean {
   }
 }
 
+// ── POST /scans/:id/report-fp — report a false positive finding ──────────
+scans.post('/:id/report-fp', async (c) => {
+  const { user_id } = c.get('auth') as AuthContext;
+  const scan_id = c.req.param('id');
+
+  // Verify scan belongs to user
+  const scan = await c.env.DB.prepare('SELECT id FROM scans WHERE id = ? AND user_id = ?')
+    .bind(scan_id, user_id).first<{ id: string }>();
+  if (!scan) return c.json({ error: 'Scan not found' }, 404);
+
+  const body = await c.req.json().catch(() => ({})) as {
+    finding_type?: string;
+    finding_url?: string;
+    finding_severity?: string;
+    reason?: string;
+  };
+
+  if (!body.finding_type || !body.finding_url || !body.finding_severity) {
+    return c.json({ error: 'finding_type, finding_url and finding_severity are required' }, 400);
+  }
+
+  const id = crypto.randomUUID();
+  await c.env.DB.prepare(
+    `INSERT INTO false_positive_reports (id, scan_id, user_id, finding_type, finding_url, finding_severity, reason, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, unixepoch())`
+  ).bind(id, scan_id, user_id, body.finding_type, body.finding_url, body.finding_severity, body.reason ?? null).run();
+
+  return c.json({ success: true, id });
+});
+
 export default scans;

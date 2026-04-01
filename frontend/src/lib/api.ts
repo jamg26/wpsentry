@@ -154,6 +154,18 @@ export interface ScansListResponse {
   };
 }
 
+export interface FpReport {
+  id: string;
+  scan_id: string;
+  finding_type: string;
+  finding_url: string;
+  finding_severity: string;
+  reason: string | null;
+  status: 'pending' | 'confirmed' | 'rejected';
+  created_at: number;
+  user_email: string;
+}
+
 class ApiClient {
   private async request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const res = await fetch(`${BASE}${path}`, {
@@ -358,6 +370,31 @@ class ApiClient {
   // ── Public scan ───────────────────────────────────────────────────────
   getPublicScan(token: string) {
     return this.request<ScanDetail>(`/public/scans/${token}`);
+  }
+
+  // ── False positive reporting ──────────────────────────────────────────
+  reportFalsePositive(scanId: string, data: {
+    finding_type: string;
+    finding_url: string;
+    finding_severity: string;
+    reason?: string;
+  }) {
+    return this.request<{ success: boolean; id: string }>(`/scans/${scanId}/report-fp`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // ── Admin — FP reports ────────────────────────────────────────────────
+  adminGetFpReports() {
+    return this.request<{ reports: FpReport[] }>('/admin/fp-reports');
+  }
+
+  adminUpdateFpStatus(id: string, status: 'pending' | 'confirmed' | 'rejected') {
+    return this.request<{ success: boolean }>(`/admin/fp-reports/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
   }
 }
 export const api = new ApiClient();

@@ -437,7 +437,7 @@ export default function ScanDetail() {
                 );
               }
               return filtered.map((finding: Finding, i: number) => (
-                <FindingCard key={i} finding={finding} />
+                <FindingCard key={i} finding={finding} scanId={scan.id} />
               ));
             })()}
           </div>

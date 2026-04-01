@@ -23,6 +23,7 @@ import AdminScans from './pages/admin/AdminScans.tsx';
 import AdminConfig from './pages/admin/AdminConfig.tsx';
 import AdminDB from './pages/admin/AdminDB.tsx';
 import AdminRateLimits from './pages/admin/AdminRateLimits.tsx';
+import AdminFPReports from './pages/admin/AdminFPReports.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
 import CookieConsent from './components/CookieConsent.tsx';
 import { ShieldIcon } from './components/Icons.tsx';
@@ -120,6 +121,7 @@ export default function App() {
             <Route path="scans" element={<AdminScans />} />
             <Route path="config" element={<AdminConfig />} />
             <Route path="rate-limits" element={<AdminRateLimits />} />
+            <Route path="fp-reports" element={<AdminFPReports />} />
             <Route path="db" element={<AdminDB />} />
           </Route>
           <Route path="*" element={<NotFound />} />

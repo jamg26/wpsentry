@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import type { Finding } from '../lib/api.ts';
-import { ChevronRightIcon, WarningIcon, InfoIcon, CriticalIcon, CopyIcon, CheckIcon } from './Icons.tsx';
+import { ChevronRightIcon, WarningIcon, InfoIcon, CriticalIcon, CopyIcon, CheckIcon, FlagIcon } from './Icons.tsx';
+import { api } from '../lib/api.ts';
+import { useToast } from './Toast.tsx';
 
 interface FindingCardProps {
   finding: Finding;
+  scanId?: string;
 }
 
 const severityConfig = {
@@ -103,15 +106,45 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
   );
 }
 
-export default function FindingCard({ finding }: FindingCardProps) {
+export default function FindingCard({ finding, scanId }: FindingCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [showFpModal, setShowFpModal] = useState(false);
+  const [fpReason, setFpReason] = useState('');
+  const [fpSubmitting, setFpSubmitting] = useState(false);
+  const [fpDone, setFpDone] = useState(false);
+  const { toast } = useToast();
   const config = severityConfig[finding.severity];
+
+  const handleReportFP = async () => {
+    if (!scanId) return;
+    setFpSubmitting(true);
+    try {
+      await api.reportFalsePositive(scanId, {
+        finding_type: finding.type,
+        finding_url: finding.url,
+        finding_severity: finding.severity,
+        reason: fpReason.trim() || undefined,
+      });
+      setFpDone(true);
+      setShowFpModal(false);
+      toast({ message: 'False positive reported — thank you!', type: 'success' });
+    } catch {
+      toast({ message: 'Failed to submit report', type: 'error' });
+    } finally {
+      setFpSubmitting(false);
+    }
+  };
 
   return (
     <div className={`bg-slate-900/60 border border-slate-800 border-l-4 ${config.border} rounded-r-xl rounded-l-none overflow-hidden shadow-sm shadow-black/5 hover:shadow-md hover:shadow-black/10 transition-all`}>
-      <button
-        className="w-full px-5 py-4 flex items-start gap-3 text-left hover:bg-slate-800/30 transition-all"
+      {/* Header row — div instead of button to allow real link inside */}
+      <div
+        className="w-full px-5 py-4 flex items-start gap-3 text-left hover:bg-slate-800/30 transition-all cursor-pointer select-none"
         onClick={() => setExpanded(!expanded)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(!expanded); } }}
+        aria-expanded={expanded}
       >
         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${config.badge} shrink-0 mt-0.5`}>
           {config.icon}
@@ -123,14 +156,61 @@ export default function FindingCard({ finding }: FindingCardProps) {
             href={finding.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-brand-400 hover:text-brand-300 hover:underline truncate mt-0.5 block"
+            className="text-xs text-brand-400 hover:text-brand-300 underline-offset-2 hover:underline mt-0.5 block break-all"
             onClick={(e) => e.stopPropagation()}
           >
             {finding.url}
           </a>
         </div>
-        <ChevronRightIcon className={`w-4 h-4 text-slate-500 shrink-0 transition-transform duration-200 mt-0.5 ${expanded ? 'rotate-90' : ''}`} />
-      </button>
+        <div className="flex items-center gap-1 shrink-0">
+          {/* FP report button — only when viewing own scan */}
+          {scanId && (!fpDone ? (
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowFpModal(true); }}
+              title="Report false positive"
+              aria-label="Report false positive"
+              className="p-1.5 rounded-lg text-slate-600 hover:text-amber-400 hover:bg-amber-500/10 transition-all"
+            >
+              <FlagIcon className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <span className="p-1.5 text-amber-400" title="Reported">
+              <FlagIcon className="w-3.5 h-3.5" />
+            </span>
+          ))}
+          <ChevronRightIcon className={`w-4 h-4 text-slate-500 transition-transform duration-200 mt-0.5 ${expanded ? 'rotate-90' : ''}`} />
+        </div>
+      </div>
+
+      {/* False positive modal */}
+      {showFpModal && (
+        <div className="px-5 pb-4 pt-3 border-t border-amber-500/20 bg-amber-500/5 animate-fade-in">
+          <p className="text-xs font-semibold text-amber-400 mb-2">Report as False Positive</p>
+          <p className="text-xs text-slate-500 mb-3">Tell us why this finding is incorrect (optional):</p>
+          <textarea
+            value={fpReason}
+            onChange={(e) => setFpReason(e.target.value)}
+            placeholder="e.g. This site uses Cloudflare Pages SPA, the path returns 200 for all routes..."
+            rows={2}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 resize-none mb-3"
+          />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleReportFP}
+              disabled={fpSubmitting}
+              className="flex items-center gap-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/30 text-amber-400 text-xs font-medium px-3 py-1.5 rounded-lg transition-all disabled:opacity-50"
+            >
+              {fpSubmitting ? 'Submitting…' : 'Submit Report'}
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowFpModal(false); }}
+              className="text-xs text-slate-500 hover:text-slate-300 px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {expanded && (
         <div className="px-5 pb-5 space-y-4 border-t border-slate-800/50 animate-fade-in">
