@@ -1,0 +1,24 @@
+{
+  "name": "jwp-worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "db:migrate:remote": "npx wrangler d1 execute jwp-db --remote --file=../schema.sql",
+    "db:migrate:local": "npx wrangler d1 execute jwp-db --local --file=../schema.sql",
+    "reset:remote": "bash scripts/reset-remote.sh",
+    "reset:remote:force": "bash scripts/reset-remote-force.sh",
+    "db:clear:remote": "bash scripts/reset-remote.sh",
+    "db:clear:remote:force": "bash scripts/reset-remote-force.sh"
+  },
+  "dependencies": {
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241022.0",
+    "typescript": "^5.5.0",
+    "wrangler": "^3.80.0"
+  }
+}

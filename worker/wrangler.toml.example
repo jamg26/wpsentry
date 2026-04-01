@@ -1,0 +1,86 @@
+name = "jwp-worker"
+main = "src/index.ts"
+compatibility_date = "2024-10-22"
+compatibility_flags = ["nodejs_compat"]
+
+# ── D1 Database ──────────────────────────────────────────────────────────────
+[[d1_databases]]
+binding = "DB"
+database_name = "jwp-db"
+database_id = "YOUR_D1_DATABASE_ID"   # wrangler d1 create jwp-db
+
+# ── KV Namespaces ────────────────────────────────────────────────────────────
+[[kv_namespaces]]
+binding = "SESSIONS_KV"
+id = "YOUR_SESSIONS_KV_ID"             # wrangler kv namespace create SESSIONS_KV
+preview_id = "YOUR_SESSIONS_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "RATELIMIT_KV"
+id = "YOUR_RATELIMIT_KV_ID"            # wrangler kv namespace create RATELIMIT_KV
+preview_id = "YOUR_RATELIMIT_KV_PREVIEW_ID"
+
+# ── R2 Bucket ────────────────────────────────────────────────────────────────
+[[r2_buckets]]
+binding = "REPORTS_R2"
+bucket_name = "jwp-scan-reports"
+
+# ── Queue Producer ───────────────────────────────────────────────────────────
+[[queues.producers]]
+binding = "SCAN_QUEUE"
+queue = "jwp-scan-jobs"
+
+# ── Queue Consumer ───────────────────────────────────────────────────────────
+[[queues.consumers]]
+queue = "jwp-scan-jobs"
+max_batch_size = 1
+max_batch_timeout = 5
+max_retries = 2
+max_concurrency = 10
+dead_letter_queue = "jwp-scan-jobs-dlq"
+
+# ── Analytics Engine ─────────────────────────────────────────────────────────
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "jwp_events"
+
+# ── Custom domain route (optional) ───────────────────────────────────────────
+# [[routes]]
+# pattern = "api.yourdomain.com/*"
+# zone_name = "yourdomain.com"
+
+# ── Environment Variables (set secrets via: wrangler secret put JWT_SECRET) ──
+[vars]
+ENVIRONMENT = "production"
+DAILY_SCAN_LIMIT = "5"
+MONTHLY_SCAN_LIMIT = "50"
+CORS_ORIGIN = "https://your-pages-project.pages.dev"  # set to your Pages URL
+# ADMIN_PASSWORD — set via: wrangler secret put ADMIN_PASSWORD
+# Email (Resend) — set secret: wrangler secret put RESEND_API_KEY
+RESEND_FROM = "WPSentry <noreply@yourdomain.com>"     # set after domain verified in Resend
+
+# ── Local dev overrides ───────────────────────────────────────────────────────
+[env.dev]
+[env.dev.vars]
+ENVIRONMENT = "development"
+CORS_ORIGIN = "http://localhost:5173"
+
+
+# ── Cron Triggers ────────────────────────────────────────────────────────────
+[triggers]
+crons = ["*/15 * * * *"]
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1

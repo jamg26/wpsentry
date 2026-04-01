@@ -1,0 +1,113 @@
+name: Security Scan
+
+# Trigger on deployment or manually
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target URL to scan'
+        required: true
+        type: string
+      fail_on:
+        description: 'Fail pipeline on findings at or above this severity'
+        required: false
+        default: 'critical'
+        type: choice
+        options: [critical, high, medium]
+
+jobs:
+  jwp-scan:
+    name: WordPress Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Trigger scan
+        id: scan
+        env:
+          JWP_API_KEY: ${{ secrets.JWP_API_KEY }}
+          JWP_API_URL: ${{ secrets.JWP_API_URL }}   # e.g. https://your-worker.workers.dev
+        run: |
+          TARGET="${{ github.event.inputs.target }}"
+          TAGS='["branch:${{ github.ref_name }}","sha:${{ github.sha }}"]'
+
+          RESPONSE=$(curl -sf -X POST \
+            -H "Authorization: Bearer $JWP_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"target\":\"$TARGET\",\"tags\":$TAGS}" \
+            "$JWP_API_URL/scans")
+
+          if echo "$RESPONSE" | jq -e '.error == "rate_limit"' > /dev/null 2>&1; then
+            echo "::error::Rate limit reached. $(echo "$RESPONSE" | jq -r .message)"
+            exit 3
+          fi
+
+          SCAN_ID=$(echo "$RESPONSE" | jq -r '.id')
+          echo "scan_id=$SCAN_ID" >> $GITHUB_OUTPUT
+          echo "Scan queued: $SCAN_ID"
+
+      - name: Wait for scan to complete
+        id: wait
+        env:
+          JWP_API_KEY: ${{ secrets.JWP_API_KEY }}
+          JWP_API_URL: ${{ secrets.JWP_API_URL }}
+        run: |
+          SCAN_ID="${{ steps.scan.outputs.scan_id }}"
+          for i in $(seq 1 36); do
+            sleep 10
+            RESULT=$(curl -sf \
+              -H "Authorization: Bearer $JWP_API_KEY" \
+              "$JWP_API_URL/scans/$SCAN_ID")
+            STATUS=$(echo "$RESULT" | jq -r '.status')
+            echo "[$((i*10))s] status=$STATUS"
+            if [ "$STATUS" = "completed" ]; then
+              echo "result=$RESULT" >> $GITHUB_OUTPUT
+              break
+            fi
+            if [ "$STATUS" = "failed" ]; then
+              echo "::error::Scan failed: $(echo "$RESULT" | jq -r '.error_message // "unknown"')"
+              exit 2
+            fi
+          done
+
+      - name: Evaluate findings
+        env:
+          JWP_API_KEY: ${{ secrets.JWP_API_KEY }}
+          JWP_API_URL: ${{ secrets.JWP_API_URL }}
+          JWP_FRONTEND_URL: ${{ secrets.JWP_FRONTEND_URL }}  # e.g. https://your-pages.pages.dev
+        run: |
+          SCAN_ID="${{ steps.scan.outputs.scan_id }}"
+          RESULT=$(curl -sf \
+            -H "Authorization: Bearer $JWP_API_KEY" \
+            "$JWP_API_URL/scans/$SCAN_ID")
+
+          CRITICAL=$(echo "$RESULT" | jq '.by_severity.critical')
+          HIGH=$(echo "$RESULT" | jq '.by_severity.high')
+          MEDIUM=$(echo "$RESULT" | jq '.by_severity.medium')
+          LOW=$(echo "$RESULT" | jq '.by_severity.low')
+          TOTAL=$(echo "$RESULT" | jq '.findings_count')
+
+          echo "## Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔴 Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🟠 High     | $HIGH     |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🟡 Medium   | $MEDIUM   |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔵 Low      | $LOW      |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Total**   | **$TOTAL** |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[View full report]($JWP_FRONTEND_URL/scans/$SCAN_ID)" >> $GITHUB_STEP_SUMMARY
+
+          FAIL_ON="${{ github.event.inputs.fail_on || 'critical' }}"
+          case $FAIL_ON in
+            critical) FAIL_COUNT=$CRITICAL ;;
+            high)     FAIL_COUNT=$((CRITICAL + HIGH)) ;;
+            medium)   FAIL_COUNT=$((CRITICAL + HIGH + MEDIUM)) ;;
+          esac
+
+          if [ "$FAIL_COUNT" -gt 0 ]; then
+            echo "::error::$FAIL_COUNT finding(s) at or above '$FAIL_ON' severity. See: $JWP_FRONTEND_URL/scans/$SCAN_ID"
+            exit 1
+          fi
+
+          echo "✅ No findings at or above '$FAIL_ON' severity."

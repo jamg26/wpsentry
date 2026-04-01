@@ -1,0 +1,14 @@
+# Cloudflare Pages configuration
+# Place this file at the root of the frontend/ directory
+
+[build]
+command = "npm run build"
+output_dir = "dist"
+
+[build.environment]
+NODE_VERSION = "20"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200

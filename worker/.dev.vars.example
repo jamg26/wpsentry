@@ -1,0 +1,4 @@
+# Copy this file to .dev.vars and fill in real values for local development.
+# Never commit .dev.vars — it is gitignored.
+JWT_SECRET=your-random-32-char-secret-here
+ADMIN_PASSWORD=your-admin-password
