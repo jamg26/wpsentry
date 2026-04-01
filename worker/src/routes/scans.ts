@@ -283,7 +283,8 @@ scans.post('/:id/share', async (c) => {
   await c.env.DB.prepare('UPDATE scans SET is_public = 1, public_token = ? WHERE id = ? AND user_id = ?')
     .bind(token, scan.id, user.sub).run();
 
-  const origin = c.env.CORS_ORIGIN ?? 'https://wpsentry.link';
+  // CORS_ORIGIN may be comma-separated (multiple allowed origins) — use only the first
+  const origin = (c.env.CORS_ORIGIN ?? 'https://wpsentry.link').split(',')[0].trim();
   return c.json({
     token,
     public_url: `${origin}/public/scans/${token}`,
