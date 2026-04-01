@@ -767,7 +767,36 @@ CLOUDFLARE_ACCOUNT_ID=8846c8d2c9e982da3cee1c655ff8cb7c npx wrangler d1 execute j
 
 ---
 
-### 13.3 Smoke Test After Every Deploy
+### 13.4 Module Count — Update All References When Adding/Removing Modules
+
+**Mistake (historical):** New scanner modules were added to `modules/index.ts` but the module count displayed to users stayed stale (e.g. said "100 checks" when there were 122).  
+**Rule:** Every time a scanner module is added or removed, update ALL of the following references:
+
+| File | Location | What to update |
+|------|----------|----------------|
+| `worker/src/scanner/modules/index.ts` | Module array | Add/remove the module import + entry |
+| `frontend/src/pages/Landing.tsx` | Line ~21 `'122 Security Checks'` | Update number |
+| `frontend/src/pages/Landing.tsx` | Line ~57 `'runs 122 security checks'` | Update number |
+| `frontend/src/pages/Landing.tsx` | Line ~193 stat badge | Update number |
+| `frontend/src/pages/Landing.tsx` | Line ~411 feature description | Update number |
+| `frontend/src/pages/NewScan.tsx` | Last module `{ id: 122, label: ... }` | Update max id |
+
+**How to get the real count:**
+```bash
+grep -c "{ id:" /home/jamg/strix/worker/src/scanner/modules/index.ts
+# or
+grep "run as run" /home/jamg/strix/worker/src/scanner/modules/index.ts | wc -l
+```
+
+**Search command to find ALL hardcoded counts before shipping:**
+```bash
+grep -rn "122\|100 checks\|100+ checks" frontend/src/
+# Every hit must be updated to the new count
+```
+
+---
+
+### 13.5 Smoke Test After Every Deploy
 
 **Mistake:** Deployed a worker with a 500 error, only discovered it because the user tried the feature.  
 **Rule:** After every worker deploy, smoke test the changed endpoint with `curl` before closing the task. A 200 response (or expected 4xx for auth failures) confirms the deploy is working.
@@ -780,4 +809,4 @@ curl -s -o /dev/null -w "%{http_code}" https://api.wpsentry.link/health
 
 ---
 
-*Last updated: Phase 17 (False Positive Reporting fix)*
+*Last updated: Phase 17 (Module sync rule + False Positive Reporting fix)*
