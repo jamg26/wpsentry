@@ -11,6 +11,7 @@ import {
   DatabaseIcon,
   ServerIcon,
   ArrowRightIcon,
+  GithubIcon,
 } from '../components/Icons.tsx';
 
 const features = [
@@ -105,6 +106,15 @@ export default function Landing() {
 
           </Link>
           <div className="flex items-center gap-3">
+            <a
+              href="https://github.com/jamg26/wpsentry"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 font-medium transition-colors px-2 py-1.5 rounded-lg hover:bg-slate-800"
+            >
+              <GithubIcon className="w-4 h-4" />
+              <span>Open Source</span>
+            </a>
             {user ? (
               <Link
                 to="/dashboard"
@@ -190,6 +200,15 @@ export default function Landing() {
                   <CheckIcon className="w-3.5 h-3.5 text-brand-400" />
                   Free Forever
                 </div>
+                <a
+                  href="https://github.com/jamg26/wpsentry"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs text-brand-400 hover:text-brand-300 transition-colors font-medium"
+                >
+                  <GithubIcon className="w-3.5 h-3.5" />
+                  Open Source
+                </a>
                 <div className="flex items-center gap-1.5 text-xs font-medium text-brand-400">
                   <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
                   10,000+ scans run
@@ -425,6 +444,31 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Open Source Banner */}
+      <section className="py-16 border-t border-slate-800/50 bg-slate-900/20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 mb-5">
+              <GithubIcon className="w-6 h-6 text-slate-300" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-100 mb-3">Proudly Open Source</h2>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+              WPSentry is fully open source. Every scanning module, every line of code — transparent and community-driven.
+              Audit the scanner, contribute new modules, or self-host it yourself.
+            </p>
+            <a
+              href="https://github.com/jamg26/wpsentry"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 text-slate-200 font-semibold py-3 px-6 rounded-xl text-sm transition-all hover:shadow-lg"
+            >
+              <GithubIcon className="w-4 h-4" />
+              View on GitHub — jamg26/wpsentry
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-20 md:py-28 border-t border-slate-800/50 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-brand-500/5 to-transparent" />
@@ -457,6 +501,15 @@ export default function Landing() {
             </div>
 
             <div className="flex items-center gap-4 text-xs text-slate-500">
+              <a
+                href="https://github.com/jamg26/wpsentry"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 hover:text-slate-300 transition-colors"
+              >
+                <GithubIcon className="w-3.5 h-3.5" />
+                Open Source
+              </a>
               <Link to="/terms" className="hover:text-slate-300 transition-colors">Terms of Service</Link>
               <Link to="/privacy" className="hover:text-slate-300 transition-colors">Privacy Policy</Link>
             </div>
