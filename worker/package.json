@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --env dev --port 8080",
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types",
     "db:migrate:remote": "npx wrangler d1 execute jwp-db --remote --file=../schema.sql",
