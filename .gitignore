@@ -1,11 +1,3 @@
-jwp_runs/
-wpjson.json
-.jwp_history
-__pycache__/
-*.pyc
-*.pyo
-
-# Node
 node_modules/
 dist/
 .env
@@ -17,22 +9,16 @@ dist/
 .wrangler/
 worker/dist/
 
-# Wrangler (real config with your IDs — copy from wrangler.toml.example)
-worker/wrangler.toml
-
 # Cloudflare
 .cloudflare/
-tc_cookies.txt
 
 # Session / cookies (contain auth tokens)
+tc_cookies.txt
 .session-cookies.txt
 
 # Test session state (contains auth tokens — generate with: cd tests && npm run setup)
 tests/storageState.json
 tests/test-results/
 
-# Internal docs (setup guides, compliance reports)
-docs/
-
-# Copilot skills (internal orchestration — not for public)
-.github/skills/
+# Copilot session state
+.copilot/

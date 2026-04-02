@@ -1,0 +1,118 @@
+name = "jwp-worker"
+main = "src/index.ts"
+compatibility_date = "2024-10-22"
+compatibility_flags = ["nodejs_compat"]
+
+# ── D1 Database ──────────────────────────────────────────────────────────────
+[[d1_databases]]
+binding = "DB"
+database_name = "jwp-db"
+database_id = "a94cb518-a526-4921-8cf2-e6b160067ea9"
+
+# ── KV Namespaces ────────────────────────────────────────────────────────────
+[[kv_namespaces]]
+binding = "SESSIONS_KV"
+id = "acf1c55d8388427281e76d7117402a84"
+preview_id = "16acde3fb0bf402aa1147b1c8aeaa88a"
+
+[[kv_namespaces]]
+binding = "RATELIMIT_KV"
+id = "b1797d9176b24b4fa8c74f7234dd702c"
+preview_id = "de076ddf16254dfb9aef9015b9f6b34d"
+
+# ── R2 Bucket ────────────────────────────────────────────────────────────────
+[[r2_buckets]]
+binding = "REPORTS_R2"
+bucket_name = "jwp-scan-reports"
+
+# ── Queue Producer ───────────────────────────────────────────────────────────
+[[queues.producers]]
+binding = "SCAN_QUEUE"
+queue = "jwp-scan-jobs"
+
+# ── Queue Consumer ───────────────────────────────────────────────────────────
+[[queues.consumers]]
+queue = "jwp-scan-jobs"
+max_batch_size = 1
+max_batch_timeout = 5
+max_retries = 2
+max_concurrency = 10
+dead_letter_queue = "jwp-scan-jobs-dlq"
+
+# ── Analytics Engine ─────────────────────────────────────────────────────────
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "jwp_events"
+
+[[routes]]
+pattern = "api.wpsentry.link/*"
+zone_name = "wpsentry.link"
+
+# ── Environment Variables (set secrets via: wrangler secret put JWT_SECRET) ──
+[vars]
+ENVIRONMENT = "production"
+DAILY_SCAN_LIMIT = "5"
+MONTHLY_SCAN_LIMIT = "50"
+CORS_ORIGIN = "https://wpsentry.link,https://jwp-scanner.pages.dev"
+# ADMIN_PASSWORD — set via: wrangler secret put ADMIN_PASSWORD
+# Email (Resend) — set secret: wrangler secret put RESEND_API_KEY
+RESEND_FROM = "WPSentry <noreply@wpsentry.link>"
+
+# ── Local dev overrides ───────────────────────────────────────────────────────
+# Run with: wrangler dev --env dev
+# Bindings must be redeclared — Wrangler named environments do NOT inherit top-level bindings.
+[env.dev]
+
+[[env.dev.d1_databases]]
+binding = "DB"
+database_name = "jwp-db"
+database_id = "a94cb518-a526-4921-8cf2-e6b160067ea9"
+
+[[env.dev.kv_namespaces]]
+binding = "SESSIONS_KV"
+id = "acf1c55d8388427281e76d7117402a84"
+preview_id = "16acde3fb0bf402aa1147b1c8aeaa88a"
+
+[[env.dev.kv_namespaces]]
+binding = "RATELIMIT_KV"
+id = "b1797d9176b24b4fa8c74f7234dd702c"
+preview_id = "de076ddf16254dfb9aef9015b9f6b34d"
+
+[[env.dev.r2_buckets]]
+binding = "REPORTS_R2"
+bucket_name = "jwp-scan-reports"
+
+[[env.dev.queues.producers]]
+binding = "SCAN_QUEUE"
+queue = "jwp-scan-jobs"
+
+[[env.dev.analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "jwp_events"
+
+[env.dev.vars]
+ENVIRONMENT = "development"
+DAILY_SCAN_LIMIT = "5"
+MONTHLY_SCAN_LIMIT = "50"
+CORS_ORIGIN = "http://localhost:5173"
+RESEND_FROM = "WPSentry <noreply@wpsentry.link>"
+
+
+# ── Cron Triggers ────────────────────────────────────────────────────────────
+[triggers]
+crons = ["*/15 * * * *"]
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1

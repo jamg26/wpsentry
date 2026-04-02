@@ -19,9 +19,9 @@ description: Orchestrator playbook for JWP Scanner. Read this first on every ses
 | API | `https://api.wpsentry.link` (Cloudflare Worker → `jwp-worker`) |
 | Admin | `https://wpsentry.link/admin` |
 | GitHub | `https://github.com/jamg26/wpsentry` |
-| QA login | `qatest@test.com` / `QATest1234!` |
-| CF Account | `8846c8d2c9e982da3cee1c655ff8cb7c` |
-| D1 DB | `jwp-db` (`a94cb518-a526-4921-8cf2-e6b160067ea9`) |
+| QA login | see `.dev.vars` / local env |
+| CF Account | `$CFID` (set in shell: `export CFID=<your-account-id>`) |
+| D1 DB | `jwp-db` (ID in `wrangler.toml`) |
 
 ### One-liner deploy sequence
 ```
@@ -30,7 +30,8 @@ D1 migration → wrangler deploy → npm run build + pages deploy → curl smoke
 
 ### Copy-paste commands
 ```bash
-export CFID=8846c8d2c9e982da3cee1c655ff8cb7c
+# Set your Cloudflare account ID once (find it in: wrangler.toml or Cloudflare dashboard)
+export CFID=<your-cloudflare-account-id>
 
 # Deploy worker
 cd worker && CLOUDFLARE_ACCOUNT_ID=$CFID npx wrangler deploy
