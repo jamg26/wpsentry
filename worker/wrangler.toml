@@ -86,6 +86,14 @@ bucket_name = "jwp-scan-reports"
 binding = "SCAN_QUEUE"
 queue = "jwp-scan-jobs"
 
+[[env.dev.queues.consumers]]
+queue = "jwp-scan-jobs"
+max_batch_size = 1
+max_batch_timeout = 5
+max_retries = 2
+max_concurrency = 10
+dead_letter_queue = "jwp-scan-jobs-dlq"
+
 [[env.dev.analytics_engine_datasets]]
 binding = "ANALYTICS"
 dataset = "jwp_events"
