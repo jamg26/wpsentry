@@ -1,4 +1,6 @@
-# Copy this file to .dev.vars and fill in real values for local development.
+# Copy this file to .dev.vars and fill in values for local development.
 # Never commit .dev.vars — it is gitignored.
+# Usage: wrangler dev --env dev
 JWT_SECRET=your-random-32-char-secret-here
 ADMIN_PASSWORD=your-admin-password
+RESEND_API_KEY=

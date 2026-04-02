@@ -60,10 +60,48 @@ CORS_ORIGIN = "https://your-pages-project.pages.dev"  # set to your Pages URL
 RESEND_FROM = "WPSentry <noreply@yourdomain.com>"     # set after domain verified in Resend
 
 # ── Local dev overrides ───────────────────────────────────────────────────────
+# Run with: wrangler dev --env dev
+# Bindings must be redeclared — Wrangler named environments do NOT inherit top-level bindings.
 [env.dev]
+
+[[env.dev.d1_databases]]
+binding = "DB"
+database_name = "jwp-db"
+database_id = "YOUR_D1_DATABASE_ID"
+
+[[env.dev.kv_namespaces]]
+binding = "SESSIONS_KV"
+id = "YOUR_SESSIONS_KV_ID"
+preview_id = "YOUR_SESSIONS_KV_PREVIEW_ID"
+
+[[env.dev.kv_namespaces]]
+binding = "RATELIMIT_KV"
+id = "YOUR_RATELIMIT_KV_ID"
+preview_id = "YOUR_RATELIMIT_KV_PREVIEW_ID"
+
+[[env.dev.r2_buckets]]
+binding = "REPORTS_R2"
+bucket_name = "jwp-scan-reports"
+
+[[env.dev.queues.producers]]
+binding = "SCAN_QUEUE"
+queue = "jwp-scan-jobs"
+
+[[env.dev.analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "jwp_events"
+
 [env.dev.vars]
 ENVIRONMENT = "development"
+DAILY_SCAN_LIMIT = "5"
+MONTHLY_SCAN_LIMIT = "50"
 CORS_ORIGIN = "http://localhost:5173"
+RESEND_FROM = "WPSentry <noreply@yourdomain.com>"
+
+# Also create worker/.dev.vars (gitignored) with secrets:
+#   JWT_SECRET=your-random-32-char-secret
+#   ADMIN_PASSWORD=localadmin
+#   RESEND_API_KEY=
 
 
 # ── Cron Triggers ────────────────────────────────────────────────────────────
