@@ -33,7 +33,7 @@ const features = [
     icon: <LayersIcon className="w-6 h-6" />,
     color: 'sky' as const,
     title: 'Severity Sorting',
-    description: 'Findings ranked from Critical to Info with actionable remediation steps for every issue.',
+    description: 'Findings ranked from Critical to Info. AI generates contextual remediation instructions tailored to each vulnerability.',
     detail: 'Levels: Critical → High → Medium → Low → Info',
   },
   {
@@ -152,9 +152,12 @@ export default function Landing() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left: Copy */}
             <div className="text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs font-medium text-brand-400 mb-8 animate-fade-in-up">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-xs font-medium text-brand-400 mb-3 animate-fade-in-up">
                 <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse" />
                 OWASP Top 10
+              </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-xs font-medium text-violet-400 mb-8 animate-fade-in-up ml-2">
+                ✦ AI-Powered Remediation
               </div>
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
@@ -199,6 +202,10 @@ export default function Landing() {
                 <div className="flex items-center gap-1.5 text-xs text-slate-500">
                   <CheckIcon className="w-3.5 h-3.5 text-brand-400" />
                   Free Forever
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-violet-400 font-medium">
+                  <span>✦</span>
+                  AI Remediation
                 </div>
                 <a
                   href="https://github.com/jamg26/wpsentry"
@@ -363,6 +370,55 @@ export default function Landing() {
                 <Link to={user ? '/history' : '/signup'} className="text-xs text-brand-400 hover:text-brand-300 font-medium">
                   {user ? 'View your scans →' : 'Sign up to run your own scan →'}
                 </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Remediation Highlight */}
+      <section className="py-20 md:py-28 border-t border-slate-800/50">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="relative rounded-2xl overflow-hidden border border-violet-500/20 bg-gradient-to-br from-violet-500/5 via-slate-900/60 to-slate-900/80 p-8 md:p-12">
+              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative grid md:grid-cols-2 gap-10 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-xs font-medium text-violet-400 mb-6">
+                    ✦ AI-Powered
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-slate-100 mb-4">
+                    Remediation instructions written by AI
+                  </h2>
+                  <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                    After each scan, our AI analyses every finding and generates precise, contextual fix instructions — not generic advice. Each recommendation is tailored to the exact vulnerability found on your site.
+                  </p>
+                  <ul className="space-y-3">
+                    {[
+                      'Specific to the vulnerability type and context',
+                      'Covers plugins, themes, server config, and code',
+                      'Falls back to expert-written guidance when offline',
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-2.5 text-sm text-slate-300">
+                        <CheckIcon className="w-4 h-4 text-violet-400 mt-0.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Mock AI remediation card */}
+                <div className="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden">
+                  <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-orange-400 uppercase tracking-wider">High — XML-RPC Enabled</span>
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-violet-500/15 text-violet-400 border border-violet-500/20">✦ AI</span>
+                  </div>
+                  <div className="p-4">
+                    <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-2">Remediation</p>
+                    <p className="text-sm text-slate-300 leading-relaxed">
+                      Disable XML-RPC entirely by adding <code className="text-violet-300 bg-violet-500/10 px-1 rounded">add_filter('xmlrpc_enabled', '__return_false')</code> to your theme's <code className="text-violet-300 bg-violet-500/10 px-1 rounded">functions.php</code>. Alternatively, install the "Disable XML-RPC" plugin or block the endpoint at the server level via your <code className="text-violet-300 bg-violet-500/10 px-1 rounded">.htaccess</code> file.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
