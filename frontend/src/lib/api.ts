@@ -59,6 +59,7 @@ export interface Finding {
   description: string;
   replication_steps?: string[];
   remediation?: string;
+  remediation_ai?: boolean;
   evidence?: string;
 }
 
@@ -132,6 +133,7 @@ export interface ScanDetail extends ScanSummary {
     created_at: string;
     completed_at: string;
     modules_run: number;
+    findings: Finding[];
     results: ModuleResult[];
     summary: {
       total_modules: number;

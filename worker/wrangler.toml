@@ -57,6 +57,7 @@ CORS_ORIGIN = "https://wpsentry.link,https://jwp-scanner.pages.dev"
 # ADMIN_PASSWORD — set via: wrangler secret put ADMIN_PASSWORD
 # Email (Resend) — set secret: wrangler secret put RESEND_API_KEY
 RESEND_FROM = "WPSentry <noreply@wpsentry.link>"
+# AI remediation (OpenRouter) — set secret: wrangler secret put OPENROUTER_API_KEY
 
 # ── Local dev overrides ───────────────────────────────────────────────────────
 # Run with: wrangler dev --env dev

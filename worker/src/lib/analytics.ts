@@ -9,7 +9,8 @@ type EventName =
   | 'auth_signup'
   | 'auth_login'
   | 'rate_limit_hit'
-  | 'error';
+  | 'error'
+  | 'email_verified';
 
 interface EventData {
   user_id?: string;
@@ -20,6 +21,7 @@ interface EventData {
   findings_count?: number;
   duration_ms?: number;
   error?: string;
+  email?: string;
 }
 
 export function trackEvent(env: Env, event: EventName, data: EventData = {}): void {
@@ -33,11 +35,7 @@ export function trackEvent(env: Env, event: EventName, data: EventData = {}): vo
         data.status ?? '',
         data.error ?? '',
       ],
-      doubles: [
-        data.module_count ?? 0,
-        data.findings_count ?? 0,
-        data.duration_ms ?? 0,
-      ],
+      doubles: [data.module_count ?? 0, data.findings_count ?? 0, data.duration_ms ?? 0],
       indexes: [event],
     });
   } catch {

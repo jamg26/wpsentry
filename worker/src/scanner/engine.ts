@@ -11,6 +11,7 @@ import { sendEmail } from '../lib/email.js';
 import { scanCompleteEmail, criticalAlertEmail } from '../lib/emailTemplates.js';
 import { fetchURL } from './utils.js';
 import { MODULES } from './modules/index.js';
+import { enhanceRemediationsWithAI } from '../lib/ai-remediation.js';
 
 interface ScanProgressEvent {
   module: string;
@@ -171,7 +172,8 @@ export async function handleScanJob(message: ScanJobMessage, env: Env): Promise<
   const rawFindings: Finding[] = results
     .flatMap((r) => r.findings)
     .sort((a, b) => (SEVERITY_ORDER[a.severity] ?? 5) - (SEVERITY_ORDER[b.severity] ?? 5));
-  const allFindings = deduplicateFindings(rawFindings, results);
+  const deduped = deduplicateFindings(rawFindings, results);
+  const allFindings = await enhanceRemediationsWithAI(deduped, env.OPENROUTER_API_KEY);
   const summary = buildSummary(results, allFindings);
 
   // Build full report — include deduped findings at top level so clients don't need to

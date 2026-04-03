@@ -6,6 +6,7 @@
     "dev": "wrangler dev --env dev --port 8080",
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "db:migrate:remote": "npx wrangler d1 execute jwp-db --remote --file=../schema.sql",
     "db:migrate:local": "npx wrangler d1 execute jwp-db --local --file=../schema.sql",
     "reset:remote": "bash scripts/reset-remote.sh",
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241022.0",
+    "prettier": "^3.8.1",
     "typescript": "^5.5.0",
     "wrangler": "^3.80.0"
   }

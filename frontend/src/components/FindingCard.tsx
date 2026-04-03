@@ -248,7 +248,14 @@ export default function FindingCard({ finding, scanId }: FindingCardProps) {
 
           {finding.remediation && (
             <div className="bg-brand-500/5 border border-brand-500/20 rounded-xl p-4">
-              <h4 className="text-xs font-semibold text-brand-400 uppercase tracking-wider mb-2">Remediation</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <h4 className="text-xs font-semibold text-brand-400 uppercase tracking-wider">Remediation</h4>
+                {finding.remediation_ai && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-violet-500/15 text-violet-400 border border-violet-500/20">
+                    ✦ AI
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-slate-300 leading-relaxed"><Linkified text={finding.remediation} /></p>
             </div>
           )}

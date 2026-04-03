@@ -16,6 +16,8 @@ export interface Env {
   // Email (Resend) — set secret: wrangler secret put RESEND_API_KEY
   RESEND_API_KEY?: string;
   RESEND_FROM?: string;
+  // AI remediation — set secret: wrangler secret put OPENROUTER_API_KEY
+  OPENROUTER_API_KEY?: string;
 }
 
 // ── Database row types ─────────────────────────────────────────────────────
@@ -110,6 +112,7 @@ export interface Finding {
   description: string;
   replication_steps?: string[];
   remediation?: string;
+  remediation_ai?: boolean;
   evidence?: string;
 }
 
