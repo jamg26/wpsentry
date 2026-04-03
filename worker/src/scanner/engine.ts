@@ -159,21 +159,26 @@ export async function handleScanJob(message: ScanJobMessage, env: Env): Promise<
     const isHttp = target.startsWith('http://');
     const isBlocked = [homeStatus, wpLoginStatus, wpJsonStatus].some((s) => s === 403 || s === 401);
 
+    let type: string;
     let description: string;
     let remediation: string;
 
     if (isUnreachable) {
+      type = 'site_unreachable';
       description = 'The target site is not responding or could not be reached. All modules were skipped.';
       remediation = isHttp
         ? 'The site may have redirected to HTTPS. Try scanning with https:// instead. Ensure the URL is correct and the server is online.'
         : 'Ensure the URL is correct and the server is publicly accessible. Check DNS resolution and firewall rules.';
     } else if (isBlocked) {
+      type = 'scanner_blocked';
       description = `The scanner was blocked by the target server (HTTP ${[homeStatus, wpLoginStatus, wpJsonStatus].find((s) => s === 403 || s === 401)}). WordPress-specific modules were skipped.`;
-      remediation = 'A security plugin or WAF (e.g. Wordfence, Cloudflare) is blocking the scanner\'s requests. Temporarily whitelist the scanner IP, or use a browser-based check to confirm WordPress is installed.';
+      remediation = "A security plugin or WAF (e.g. Wordfence, Cloudflare) is blocking the scanner's requests. Temporarily whitelist the scanner IP, or use a browser-based check to confirm WordPress is installed.";
     } else if (isHttp) {
+      type = 'http_redirect';
       description = 'WordPress was not detected. The site uses HTTP — it may redirect to HTTPS where WordPress markup would be present.';
       remediation = 'Try scanning with https:// instead. If the site is WordPress, ensure wp-login.php and /wp-json/ are publicly accessible.';
     } else {
+      type = 'not_wordpress';
       description = 'This site does not appear to be running WordPress. WordPress-specific security modules were skipped. Only generic web security checks were performed.';
       remediation = 'If this site is WordPress, ensure wp-login.php and /wp-json/ are accessible and the homepage includes WordPress markup.';
     }
@@ -182,7 +187,7 @@ export async function handleScanJob(message: ScanJobMessage, env: Env): Promise<
       module: 'wp_detection',
       target,
       vulnerable: false,
-      findings: [{ type: 'not_wordpress', severity: 'INFO', url: target, description, remediation }],
+      findings: [{ type, severity: 'INFO', url: target, description, remediation }],
       errors: [],
       duration_ms: 0,
     };
