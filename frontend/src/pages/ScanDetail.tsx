@@ -216,7 +216,7 @@ export default function ScanDetail() {
             </div>
           </div>
           {scan.status === 'completed' && scan.report && (
-            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
               <button
                 onClick={() => navigate(`/scans/new?target=${encodeURIComponent(scan.target)}`)}
                 className="flex items-center gap-2 bg-brand-600 hover:bg-brand-500 text-white font-medium py-2 px-3 rounded-xl text-sm transition-all"
@@ -338,7 +338,7 @@ export default function ScanDetail() {
               <RiskBadge bySeverity={scan.by_severity} />
             </div>
           </div>
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {severityCounts.map((s) => (
               <div key={s.label} className={`${s.bg} border ${s.border} rounded-xl p-4 text-center hover:ring-1 ${s.ring} transition-all`}>
                 <p className={`text-2xl font-bold ${s.color} tracking-tight`}>{s.count}</p>

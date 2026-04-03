@@ -198,7 +198,7 @@ const initials = userFullName
             </Link>
           </div>
         )}
-        <div className="max-w-6xl mx-auto px-6 py-8 md:pt-8 pt-20">
+        <div className="max-w-6xl mx-auto px-6 py-8 md:pt-8 pt-20 pb-16">
           <Outlet />
         </div>
       </main>

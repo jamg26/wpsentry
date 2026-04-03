@@ -617,7 +617,7 @@ export default function NewScan() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
+        <div className="flex items-center gap-3 flex-wrap sticky bottom-0 bg-slate-950/95 backdrop-blur-sm py-4 -mx-6 px-6 md:static md:bg-transparent md:backdrop-blur-none md:py-0 md:mx-0 md:px-0 border-t border-slate-800/60 md:border-0">
           <button
             type="submit"
             disabled={loading || !hasConsent || (mode === 'custom' && selected.size === 0) || usageStats?.daily_remaining === 0 || usageStats?.monthly_remaining === 0}
