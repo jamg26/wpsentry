@@ -50,7 +50,7 @@ export default function PublicScan() {
   }
 
   const SEVERITY_ORDER: Record<string, number> = { CRITICAL: 0, HIGH: 1, MEDIUM: 2, LOW: 3, INFO: 4 };
-  const allFindings = (scan.report?.results.flatMap((r) => r.findings) ?? [])
+  const allFindings = (scan.report?.findings ?? scan.report?.results.flatMap((r) => r.findings) ?? [])
     .sort((a, b) => (SEVERITY_ORDER[a.severity] ?? 5) - (SEVERITY_ORDER[b.severity] ?? 5));
 
   return (
