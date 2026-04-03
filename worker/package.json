@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "wrangler dev --env dev --port 8080",
-    "deploy": "wrangler deploy",
+    "deploy": "wrangler deploy --env=\"\"",
     "cf-typegen": "wrangler types",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "db:migrate:remote": "npx wrangler d1 execute jwp-db --remote --file=../schema.sql",
