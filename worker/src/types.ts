@@ -13,9 +13,13 @@ export interface Env {
   MONTHLY_SCAN_LIMIT: string;
   CORS_ORIGIN: string;
   ADMIN_PASSWORD: string;
-  // Email (Resend) — set secret: wrangler secret put RESEND_API_KEY
+  // Email — set secret: wrangler secret put RESEND_API_KEY
   RESEND_API_KEY?: string;
-  RESEND_FROM?: string;
+  // Email — set secret: wrangler secret put BREVO_API_KEY  (Settings → API Keys in Brevo dashboard)
+  BREVO_API_KEY?: string;
+  // Switch provider: "resend" (default) | "brevo"
+  EMAIL_PROVIDER?: string;
+  EMAIL_FROM?: string;
   // AI remediation — set secret: wrangler secret put OPENROUTER_API_KEY
   OPENROUTER_API_KEY?: string;
 }

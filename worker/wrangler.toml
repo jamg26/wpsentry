@@ -55,8 +55,11 @@ DAILY_SCAN_LIMIT = "5"
 MONTHLY_SCAN_LIMIT = "50"
 CORS_ORIGIN = "https://wpsentry.link,https://jwp-scanner.pages.dev"
 # ADMIN_PASSWORD — set via: wrangler secret put ADMIN_PASSWORD
-# Email (Resend) — set secret: wrangler secret put RESEND_API_KEY
-RESEND_FROM = "WPSentry <noreply@wpsentry.link>"
+# Email — switch provider via EMAIL_PROVIDER: "resend" (default) | "brevo"
+# Resend:  wrangler secret put RESEND_API_KEY
+# Brevo:   wrangler secret put BREVO_API_KEY  (Brevo dashboard -> Settings -> API Keys)
+EMAIL_PROVIDER = "brevo"
+EMAIL_FROM = "WPSentry <noreply@wpsentry.link>"
 # AI remediation (OpenRouter) — set secret: wrangler secret put OPENROUTER_API_KEY
 
 # ── Local dev overrides ───────────────────────────────────────────────────────
@@ -104,7 +107,7 @@ ENVIRONMENT = "development"
 DAILY_SCAN_LIMIT = "5"
 MONTHLY_SCAN_LIMIT = "50"
 CORS_ORIGIN = "http://localhost:5173"
-RESEND_FROM = "WPSentry <noreply@wpsentry.link>"
+EMAIL_FROM = "WPSentry <noreply@wpsentry.link>"
 
 
 # ── Cron Triggers ────────────────────────────────────────────────────────────
