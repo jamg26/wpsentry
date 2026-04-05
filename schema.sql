@@ -2,13 +2,18 @@
 -- Apply with: wrangler d1 migrations apply jwp-db
 
 CREATE TABLE IF NOT EXISTS users (
-  id          TEXT    PRIMARY KEY,          -- nanoid
-  email       TEXT    UNIQUE NOT NULL,
-  password_hash TEXT  NOT NULL,             -- PBKDF2-SHA256 via Web Crypto
-  created_at  INTEGER NOT NULL,             -- Unix ms
-  last_login  INTEGER,
-  is_verified INTEGER NOT NULL DEFAULT 0,
-  is_active   INTEGER NOT NULL DEFAULT 1
+  id                   TEXT    PRIMARY KEY,          -- nanoid
+  email                TEXT    UNIQUE NOT NULL,
+  full_name            TEXT,
+  password_hash        TEXT    NOT NULL,             -- PBKDF2-SHA256 via Web Crypto
+  created_at           INTEGER NOT NULL,             -- Unix ms
+  tos_accepted_at      INTEGER,
+  tos_version          TEXT,
+  last_login           INTEGER,
+  is_verified          INTEGER NOT NULL DEFAULT 0,
+  is_active            INTEGER NOT NULL DEFAULT 1,
+  verify_token         TEXT,
+  verify_token_expires INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS scans (
