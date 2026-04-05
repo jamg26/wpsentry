@@ -20,6 +20,7 @@ export interface Env {
   // Switch provider: "resend" (default) | "brevo"
   EMAIL_PROVIDER?: string;
   EMAIL_FROM?: string;
+  RESEND_FROM?: string;
   // AI remediation — set secret: wrangler secret put OPENROUTER_API_KEY
   OPENROUTER_API_KEY?: string;
 }
@@ -159,9 +160,9 @@ export interface ScanJobMessage {
 // ── JWT ───────────────────────────────────────────────────────────────────
 
 export interface JWTPayload {
-  sub: string;   // user_id
+  sub: string; // user_id
   email: string;
-  jti: string;   // session ID for KV revocation
+  jti: string; // session ID for KV revocation
   iat: number;
   exp: number;
 }
@@ -180,6 +181,6 @@ export interface UsageStats {
   monthly_used: number;
   monthly_limit: number;
   monthly_remaining: number;
-  reset_daily_at: string;   // ISO timestamp
+  reset_daily_at: string; // ISO timestamp
   reset_monthly_at: string; // ISO timestamp
 }
