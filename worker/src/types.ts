@@ -21,8 +21,8 @@ export interface Env {
   EMAIL_PROVIDER?: string;
   EMAIL_FROM?: string;
   RESEND_FROM?: string;
-  // AI remediation — set secret: wrangler secret put OPENROUTER_API_KEY
-  OPENROUTER_API_KEY?: string;
+  // AI remediation — set secret: wrangler secret put OLLAMA_API_KEY
+  OLLAMA_API_KEY?: string;
 }
 
 // ── Database row types ─────────────────────────────────────────────────────

@@ -4,3 +4,6 @@
 JWT_SECRET=your-random-32-char-secret-here
 ADMIN_PASSWORD=your-admin-password
 RESEND_API_KEY=
+BREVO_API_KEY=
+# Ollama Cloud API key — get one at https://ohmyollama.com
+OLLAMA_API_KEY=

@@ -1,11 +1,11 @@
-// AI-powered remediation generator using OpenRouter.
-// Batches all unique finding types into a single API call to avoid hitting rate limits.
+// AI-powered remediation generator using Ollama Cloud.
+// Batches all unique finding types into a single API call.
 // Falls back to the static remediation on rate-limit (429) or any other error.
 
 import type { Finding } from '../types.js';
 
-const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'qwen/qwen3.6-plus:free';
+const OLLAMA_API_URL = 'https://api.ohmyollama.com/v1/chat/completions';
+const MODEL = 'gemma4:31b-cloud';
 
 function buildPrompt(findings: Finding[]): string {
   // Deduplicate by type, keep one representative finding per type
@@ -65,16 +65,14 @@ async function fetchAIRemediations(
 
   const doRequest = async (): Promise<Response> => {
     const ac = new AbortController();
-    const timer = setTimeout(() => ac.abort(), 20_000);
+    const timer = setTimeout(() => ac.abort(), 30_000);
     try {
-      return await fetch(OPENROUTER_API_URL, {
+      return await fetch(OLLAMA_API_URL, {
         method: 'POST',
         signal: ac.signal,
         headers: {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': 'https://wpsentry.link',
-          'X-Title': 'WPSentry Scanner',
         },
         body: JSON.stringify({
           model: MODEL,

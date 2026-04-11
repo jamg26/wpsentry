@@ -60,7 +60,7 @@ CORS_ORIGIN = "https://wpsentry.link,https://jwp-scanner.pages.dev"
 # Brevo:   wrangler secret put BREVO_API_KEY  (Brevo dashboard -> Settings -> API Keys)
 EMAIL_PROVIDER = "brevo"
 EMAIL_FROM = "WPSentry <noreply@wpsentry.link>"
-# AI remediation (OpenRouter) — set secret: wrangler secret put OPENROUTER_API_KEY
+# AI remediation (Ollama Cloud) — set secret: wrangler secret put OLLAMA_API_KEY
 
 # ── Local dev overrides ───────────────────────────────────────────────────────
 # Run with: wrangler dev --env dev
