@@ -4,7 +4,7 @@
 
 import type { Finding } from '../types.js';
 
-const OLLAMA_API_URL = 'https://api.ohmyollama.com/v1/chat/completions';
+const OLLAMA_API_URL = 'https://ollama.com/v1/chat/completions';
 const MODEL = 'gemma4:31b-cloud';
 
 function buildPrompt(findings: Finding[]): string {

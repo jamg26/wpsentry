@@ -4,7 +4,7 @@
 
 The scanner uses Ollama Cloud for AI-powered remediation suggestions.
 
-- **Provider**: Ollama Cloud (`https://api.ohmyollama.com/v1/chat/completions`)
+- **Provider**: Ollama Cloud (`https://ollama.com/v1/chat/completions`)
 - **Model**: `gemma4:31b-cloud`
 - **Config file**: `worker/src/lib/ai-remediation.ts` (constants `OLLAMA_API_URL` and `MODEL`)
 
